@@ -123,6 +123,10 @@
     NSData *strData = [data subdataWithRange:NSMakeRange(0, [data length])];
     NSString *msg = [[NSString alloc] initWithData:strData encoding:NSUTF8StringEncoding];
     LogDebug(@"<<< %@", msg);
+    //yuyuyu add 2 lines pong data
+    if ([msg isEqualToString:kLineFeed]) {
+        return nil;
+    }
     NSMutableArray *contents = (NSMutableArray *)[[msg componentsSeparatedByString:kLineFeed] mutableCopy];
     while ([contents count] > 0 && [contents[0] isEqual:@""]) {
         [contents removeObjectAtIndex:0];
@@ -137,7 +141,8 @@
             for (int i=0; i < [line length]; i++) {
                 unichar c = [line characterAtIndex:i];
                 if (c != '\x00') {
-                    [body appendString:[NSString stringWithFormat:@"%c", c]];
+                    //yuyuyu change %c to %C (unichar)
+                    [body appendString:[NSString stringWithFormat:@"%C", c]];
                 }
             }
         } else {
@@ -505,6 +510,10 @@ CFAbsoluteTime serverActivity;
 }
 
 - (void)receivedFrame:(STOMPFrame *)frame {
+    //yuyuyu add 2 lines nil frame
+    if (!frame) {
+        return;
+    }
     // CONNECTED
     if([kCommandConnected isEqual:frame.command]) {
         self.connected = YES;
